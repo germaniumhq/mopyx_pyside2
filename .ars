@@ -2,3 +2,4 @@ arg0: mopyx_pyside2
 mopyx_pyside2: true
 templates:
 - py3/lib
+- pyi/PySide2

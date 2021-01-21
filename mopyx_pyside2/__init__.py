@@ -10,7 +10,7 @@ from PySide2.QtWidgets import QApplication, QSystemTrayIcon, QLayout
 app = None
 tray_icon = None
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def create_qt_application() -> QApplication:
@@ -36,8 +36,8 @@ class Invoker(QObject):
         super(Invoker, self).__init__()
         self.queue = Queue()
 
-    def invoke(self, func, *args):
-        self.queue.put(lambda: func(*args))
+    def invoke(self, func, *args, **kw):
+        self.queue.put(lambda: func(*args, **kw))
         QMetaObject.invokeMethod(self, "handler", Qt.QueuedConnection)
 
     @Slot()
@@ -64,6 +64,7 @@ def ui_thread(f: Callable[..., T]) -> Callable[..., T]:
     :param f:
     :return:
     """
+
     @functools.wraps(f)
     def wrapper(*args, **kw) -> T:
         return invoker.invoke(f, *args, **kw)
@@ -71,10 +72,7 @@ def ui_thread(f: Callable[..., T]) -> Callable[..., T]:
     return wrapper
 
 
-def show_notification(title: str,
-                      message: str,
-                      icon: QIcon,
-                      delay: int = 4000) -> None:
+def show_notification(title: str, message: str, icon: QIcon, delay: int = 4000) -> None:
     """
     Shows a notification on the systray.
     :param title:
@@ -104,6 +102,7 @@ def _(callable: Callable[..., T]) -> Callable[[], T]:
     :param callable:
     :return:
     """
+
     def ignore_args(*args, **kw):
         return callable()
 
